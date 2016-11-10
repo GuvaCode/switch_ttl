@@ -152,7 +152,7 @@ end;
 
 function TMyApplication.GetDefaultTTL: String;
 begin
-  result:='64';
+  result:='64'; //default for Linux
 end;
 
 function TMyApplication.IsRoot: Boolean;
