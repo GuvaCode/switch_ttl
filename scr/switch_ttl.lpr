@@ -29,12 +29,12 @@ type
 
  const
  about='Switch Time To Live 0.1';
- by='By The GuvaCode: https://github.com/GuvaCode/switch_ttl';
+ by='https://github.com/GuvaCode/switch_ttl';
  cpr='(C) 2016-2017 GuvaCode';
- line='          ';
  noroot='You cannot change the ttl. Using the sudo command to get root (superuser) privileges.';
  err='Usage: --help or -h for help.';
  noparam='No parameters found.';
+ line='          ';
 
 
 function PadL(cVal: string; nWide: integer): string;
@@ -135,6 +135,7 @@ end;
 procedure TMyApplication.SwitchTTL(Val: String);
 var Proc: TProcess;
 begin
+  {$IFDEF LINUX}
   Proc := TProcess.Create(nil);
   Proc.Options := [poWaitOnExit,poUsePipes];
   Proc.Executable := 'iptables';
@@ -148,17 +149,43 @@ begin
   Proc.Parameters.Add(Val);
   Proc.Execute;
   Proc.free;
+  {$ENDIF}
+  {$IFDEF MACOS} //sudo sysctl -w net.inet.ip.ttl=65
+  Proc := TProcess.Create(nil);
+  Proc.Options := [poWaitOnExit,poUsePipes];
+  Proc.Executable := 'sysctl';
+  Proc.Parameters.Add('-w');
+  Proc.Parameters.Add('net.inet.ip.ttl='+Val);
+  Proc.Execute;
+  Proc.free;
+  {$ENDIF}
+  {$IFDEF WINDOWS}
+ // HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+ // DefaultTTL
+ // DWORD
+  {$ENDIF}
 end;
+
+
 
 function TMyApplication.GetDefaultTTL: String;
 begin
+  {$IFDEF LINUX or $IFDEF MACOS}
   result:='64'; //default for Linux
+  {$ENDIF}
+  {$IFDEF WINDOWS}
+  result:='128';//default for Win
+  {$ENDIF}
 end;
 
 function TMyApplication.IsRoot: Boolean;
 var OutList: Tstringlist;
     Proc: TProcess;
 begin
+  {$IFDEF WINDOWS}
+  Result:=true;
+  Exit;
+  {$ENDIF}
   OutList := Tstringlist.create;
   Proc := TProcess.Create(nil);
   Proc.Options := [poWaitOnExit,poUsePipes];
