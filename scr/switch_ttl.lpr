@@ -68,13 +68,7 @@ begin
    writeln(noparam+' '+err);
   Terminate;
   Exit;
-
   end;
-  {if (ErrorMsg='') then begin
-  writeln(ErrorMsg+'. '+noparam);
-  Terminate;
-  Exit;
-  end; }
 
  // parse parameters
   if HasOption('h', 'help') then begin
