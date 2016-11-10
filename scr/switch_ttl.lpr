@@ -195,6 +195,7 @@ begin
   Proc.Free;
   if OutList.Strings[0]='root' then Result:=true else
    Result:=false;
+  OutList.free;
 end;
 
 var
