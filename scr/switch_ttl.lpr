@@ -1,5 +1,5 @@
 program switch_ttl;
-
+//
 {$mode objfpc}{$H+}
 
 uses
